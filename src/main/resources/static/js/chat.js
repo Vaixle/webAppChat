@@ -36,19 +36,23 @@ function registration() {
         $.get(url + "/registration/" + userName, function (response) {
             connectToChat(userName);
 
-            var messages = response.inboxMessages
-            let usersTemplateHTML = "";
-            messages.length == 0 ? messages : messages.reverse()
-            usersTemplateHTML = createTemplate(messages, usersTemplateHTML, 'From:')
-            $('#usersList').html(usersTemplateHTML);
+            var messages = response.inboxMessage;
 
-            messages = response.sentMessages
-            messages.length == 0 ? messages : messages.reverse()
+            if (response.inboxMessages != null) {
+                s
+                let usersTemplateHTML = "";
+                messages.reverse()
+                usersTemplateHTML = createTemplate(messages, usersTemplateHTML, 'From:')
+                $('#usersList').html(usersTemplateHTML);
+            }
+            if (response.sentMessages != null) {
+                messages = response.sentMessages
+                messages.reverse()
 
-            usersTemplateHTML = "";
-            usersTemplateHTML = createTemplate(messages, usersTemplateHTML, 'To:')
-            $('.chat-history').find('ul').html(usersTemplateHTML);
-
+                usersTemplateHTML = "";
+                usersTemplateHTML = createTemplate(messages, usersTemplateHTML, 'To:')
+                $('.chat-history').find('ul').html(usersTemplateHTML);
+            }
             document.getElementById("login").hidden = true;
             document.getElementById("main").hidden = false;
         }).fail(function (error) {
