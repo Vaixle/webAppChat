@@ -1,7 +1,6 @@
 const url = 'https://web-app-email.herokuapp.com';
 let stompClient;
 let selectedUser;
-let newMessages = new Map();
 
 function connectToChat(userName) {
     console.log("connecting to chat...")
@@ -10,13 +9,10 @@ function connectToChat(userName) {
     stompClient.connect({}, function (frame) {
         console.log("connected to: " + frame);
         stompClient.subscribe("/topic/messages/" + userName, function (response) {
+
             let data = JSON.parse(response.body);
-            if (selectedUser === data.fromLogin) {
-                render(data.message, data.fromLogin, data.subject, data.createdAt);
-            } else {
-                newMessages.set(data.fromLogin, data.message);
-                $('#userNameAppender_' + data.fromLogin).append('<span id="newMessage_' + data.fromLogin + '" style="color: red">+1</span>');
-            }
+            render(data.message, data.fromLogin, data.subject, data.createdAt);
+
         });
     });
 }
@@ -34,7 +30,7 @@ function registration() {
     let userName = document.getElementById("userName").value;
     if(userName == "") {alert("Choose your name!")} else {
         $.get(url + "/registration/" + userName, function (response) {
-            setInterval(connectToChat(userName),3000);
+            connectToChat(userName);
 
             var messages = response.inboxMessages;
             let usersTemplateHTML = "";
