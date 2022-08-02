@@ -1,4 +1,4 @@
-const url = 'http://localhost:8080';
+const url = 'https://web-app-email.herokuapp.com/';
 let stompClient;
 let selectedUser;
 let newMessages = new Map();
