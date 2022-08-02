@@ -37,16 +37,15 @@ function registration() {
             connectToChat(userName);
 
             var messages = response.inboxMessage;
+            let usersTemplateHTML = "";
+            if (messages != null) {
 
-            if (response.inboxMessages != null) {
-                s
-                let usersTemplateHTML = "";
                 messages.reverse()
                 usersTemplateHTML = createTemplate(messages, usersTemplateHTML, 'From:')
                 $('#usersList').html(usersTemplateHTML);
             }
-            if (response.sentMessages != null) {
-                messages = response.sentMessages
+            messages = response.sentMessages;
+            if (messages != null) {
                 messages.reverse()
 
                 usersTemplateHTML = "";
