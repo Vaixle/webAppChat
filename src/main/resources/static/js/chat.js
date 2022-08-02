@@ -38,12 +38,13 @@ function registration() {
 
             var messages = response.inboxMessages
             let usersTemplateHTML = "";
-            messages.reverse()
+            messages.length == 0 ? messages : messages.reverse()
             usersTemplateHTML = createTemplate(messages, usersTemplateHTML, 'From:')
             $('#usersList').html(usersTemplateHTML);
 
             messages = response.sentMessages
-            messages.reverse()
+            messages.length == 0 ? messages : messages.reverse()
+
             usersTemplateHTML = "";
             usersTemplateHTML = createTemplate(messages, usersTemplateHTML, 'To:')
             $('.chat-history').find('ul').html(usersTemplateHTML);
