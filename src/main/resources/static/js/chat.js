@@ -12,7 +12,7 @@ function connectToChat(userName) {
         stompClient.subscribe("/topic/messages/" + userName, function (response) {
             let data = JSON.parse(response.body);
             if (selectedUser === data.fromLogin) {
-                render(data.message, data.fromLogin);
+                render(data.message, data.fromLogin, data.subject, data.createdAt);
             } else {
                 newMessages.set(data.fromLogin, data.message);
                 $('#userNameAppender_' + data.fromLogin).append('<span id="newMessage_' + data.fromLogin + '" style="color: red">+1</span>');
@@ -21,52 +21,59 @@ function connectToChat(userName) {
     });
 }
 
-function sendMsg(from, text) {
+function sendMsg(from, text, subject) {
+    selectedUser = $('.active')[0].text
     stompClient.send("/app/chat/" + selectedUser, {}, JSON.stringify({
         fromLogin: from,
-        message: text
+        message: text,
+        subject: subject
     }));
 }
 
 function registration() {
     let userName = document.getElementById("userName").value;
-    $.get(url + "/registration/" + userName, function (response) {
-        connectToChat(userName);
-    }).fail(function (error) {
-        if (error.status === 400) {
-            alert("Login is already busy!")
-        }
-    })
-}
+    if(userName == "") {alert("Choose your name!")} else {
+        $.get(url + "/registration/" + userName, function (response) {
+            connectToChat(userName);
 
-function selectUser(userName) {
-    console.log("selecting users: " + userName);
-    selectedUser = userName;
-    let isNew = document.getElementById("newMessage_" + userName) !== null;
-    if (isNew) {
-        let element = document.getElementById("newMessage_" + userName);
-        element.parentNode.removeChild(element);
-        render(newMessages.get(userName), userName);
+            var messages = response.inboxMessages
+            let usersTemplateHTML = "";
+            messages.reverse()
+            usersTemplateHTML = createTemplate(messages, usersTemplateHTML)
+            $('#usersList').html(usersTemplateHTML);
+
+            messages = response.sentMessages
+            messages.reverse()
+            usersTemplateHTML = "";
+            usersTemplateHTML = createTemplate(messages, usersTemplateHTML)
+            $('.chat-history').find('ul').html(usersTemplateHTML);
+
+            document.getElementById("login").hidden = true;
+            document.getElementById("main").hidden = false;
+        }).fail(function (error) {
+            if (error.status === 400) {
+
+            }
+        })
     }
-    $('#selectedUserId').html('');
-    $('#selectedUserId').append('Chat with ' + userName);
 }
 
-function fetchAll() {
-    $.get(url + "/fetchAllUsers", function (response) {
-        let users = response;
-        let usersTemplateHTML = "";
-        for (let i = 0; i < users.length; i++) {
-            usersTemplateHTML = usersTemplateHTML + '<a href="#" onclick="selectUser(\'' + users[i] + '\')"><li class="clearfix">\n' +
-                '                <img src="https://rtfm.co.ua/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png" width="55px" height="55px" alt="avatar" />\n' +
-                '                <div class="about">\n' +
-                '                    <div id="userNameAppender_' + users[i] + '" class="name">' + users[i] + '</div>\n' +
-                '                    <div class="status">\n' +
-                '                        <i class="fa fa-circle offline"></i>\n' +
-                '                    </div>\n' +
-                '                </div>\n' +
-                '            </li></a>';
-        }
-        $('#usersList').html(usersTemplateHTML);
-    });
+function switchElemVisibility(elem) {
+    let elemSwitch = elem.firstElementChild.lastElementChild
+    elemSwitch.style.display = elemSwitch.style.display === 'none' ? 'block' : 'none'
+
+}
+
+function createTemplate(messages, usersTemplateHTML) {
+    for (let i = 0; i < messages.length; i++) {
+        usersTemplateHTML = usersTemplateHTML + '<li class="clearfix" onclick="switchElemVisibility(this)">\n' +
+            '                <div class="about">\n' +
+            '                <div><b>To: </b>' + messages[i].fromLogin + '</div>\n' +
+            '                <div><b>Date: </b>' + new Date(Date.parse(messages[i].createdAt)).toLocaleString("ru-RU") + '</div>\n' +
+            '                <div><b>Subject: </b>' + messages[i].subject + '</div>\n' +
+            '                <div style="display: none">' + messages[i].message + '</div>\n' +
+            '                </div>\n' +
+            '            </li>';
+    }
+    return usersTemplateHTML;
 }
