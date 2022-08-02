@@ -39,13 +39,13 @@ function registration() {
             var messages = response.inboxMessages
             let usersTemplateHTML = "";
             messages.reverse()
-            usersTemplateHTML = createTemplate(messages, usersTemplateHTML)
+            usersTemplateHTML = createTemplate(messages, usersTemplateHTML, 'From:')
             $('#usersList').html(usersTemplateHTML);
 
             messages = response.sentMessages
             messages.reverse()
             usersTemplateHTML = "";
-            usersTemplateHTML = createTemplate(messages, usersTemplateHTML)
+            usersTemplateHTML = createTemplate(messages, usersTemplateHTML, 'To:')
             $('.chat-history').find('ul').html(usersTemplateHTML);
 
             document.getElementById("login").hidden = true;
@@ -64,11 +64,11 @@ function switchElemVisibility(elem) {
 
 }
 
-function createTemplate(messages, usersTemplateHTML) {
+function createTemplate(messages, usersTemplateHTML, direction) {
     for (let i = 0; i < messages.length; i++) {
         usersTemplateHTML = usersTemplateHTML + '<li class="clearfix" onclick="switchElemVisibility(this)">\n' +
             '                <div class="about">\n' +
-            '                <div><b>To: </b>' + messages[i].fromLogin + '</div>\n' +
+            '                <div><b>'+direction+' </b>' + messages[i].fromLogin + '</div>\n' +
             '                <div><b>Date: </b>' + new Date(Date.parse(messages[i].createdAt)).toLocaleString("ru-RU") + '</div>\n' +
             '                <div><b>Subject: </b>' + messages[i].subject + '</div>\n' +
             '                <div style="display: none">' + messages[i].message + '</div>\n' +
