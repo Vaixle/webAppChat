@@ -34,7 +34,7 @@ function registration() {
     let userName = document.getElementById("userName").value;
     if(userName == "") {alert("Choose your name!")} else {
         $.get(url + "/registration/" + userName, function (response) {
-            connectToChat(userName);
+            setInterval(connectToChat(userName),3000);
 
             var messages = response.inboxMessages;
             let usersTemplateHTML = "";
