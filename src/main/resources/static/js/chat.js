@@ -1,4 +1,4 @@
-const url = 'https://web-app-email.herokuapp.com/';
+const url = 'https://web-app-email.herokuapp.com';
 let stompClient;
 let selectedUser;
 let newMessages = new Map();
