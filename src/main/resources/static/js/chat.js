@@ -36,7 +36,7 @@ function registration() {
         $.get(url + "/registration/" + userName, function (response) {
             connectToChat(userName);
 
-            var messages = response.inboxMessage;
+            var messages = response.inboxMessages;
             let usersTemplateHTML = "";
             if (messages != null) {
 
